@@ -13,6 +13,11 @@ const connectDB = async () => {
       dns.setServers(['8.8.8.8', '8.8.4.4'])
     }
 
+    if (!process.env.MONGO_URI) {
+      console.error('❌ MONGO_URI environment variable is missing!')
+      process.exit(1)
+    }
+
     const conn = await mongoose.connect(process.env.MONGO_URI, {
       serverSelectionTimeoutMS: 10000 // fail fast if db is unreachable
     })
