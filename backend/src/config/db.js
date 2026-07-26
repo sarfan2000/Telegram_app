@@ -15,7 +15,7 @@ const connectDB = async () => {
     }
 
     const conn = await mongoose.connect(process.env.MONGO_URI, {
-      family: 4 // Force IPv4
+      serverSelectionTimeoutMS: 10000 // fail fast if db is unreachable
     })
     console.log(`✅ MongoDB connected: ${conn.connection.host}`)
   } catch (err) {
