@@ -1,0 +1,1 @@
+[{"name":"ac-utflf82-shard-00-00.jtku5kf.mongodb.net","port":27017,"priority":0,"weight":0,"type":"SRV"},{"name":"ac-utflf82-shard-00-01.jtku5kf.mongodb.net","port":27017,"priority":0,"weight":0,"type":"SRV"},{"name":"ac-utflf82-shard-00-02.jtku5kf.mongodb.net","port":27017,"priority":0,"weight":0,"type":"SRV"}]
