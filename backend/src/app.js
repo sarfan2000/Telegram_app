@@ -28,7 +28,13 @@ app.use(
   cors({
     origin: (origin, callback) => {
       // Allow requests with no origin (mobile apps, Postman, Telegram WebView)
-      if (!origin || allowedOrigins.includes(origin)) {
+      // Also allow any vercel.app deployment and localhost explicitly.
+      if (
+        !origin ||
+        allowedOrigins.includes(origin) ||
+        origin.endsWith('.vercel.app') ||
+        origin.startsWith('http://localhost')
+      ) {
         callback(null, true)
       } else {
         callback(new Error(`CORS: origin ${origin} not allowed`))
