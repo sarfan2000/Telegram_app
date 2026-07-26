@@ -8,8 +8,10 @@ const mongoose = require('mongoose')
  */
 const connectDB = async () => {
   try {
-    // FIX: Fallback to Google DNS to prevent "querySrv ECONNREFUSED" on some networks (like mobile hotspots) only in dev
-    // DNS override removed to prevent Railway production networking hangs
+    if (process.env.NODE_ENV === 'development') {
+      const dns = require('dns')
+      dns.setServers(['8.8.8.8', '8.8.4.4'])
+    }
 
     const conn = await mongoose.connect(process.env.MONGO_URI, {
       serverSelectionTimeoutMS: 10000 // fail fast if db is unreachable
