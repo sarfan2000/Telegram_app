@@ -8,7 +8,7 @@ export const clearToken = () => localStorage.removeItem('rq_token')
 
 // ── Axios instance ────────────────────────────────────────────────────────────
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000',
+  baseURL: import.meta.env.VITE_API_URL || (import.meta.env.PROD ? 'https://telegramapp-production-0f74.up.railway.app' : 'http://localhost:5000'),
   timeout: 12000,
   headers: { 'Content-Type': 'application/json' },
 })
