@@ -1,109 +1,32 @@
 /**
- * monetag.js – Monetag Rewarded Ad integration service.
- *
- * Monetag injects a global `show_9516131` function (or similar, based on zone)
- * after their SDK script is loaded.  The zone ID comes from .env.
+ * monetag.js – Monetag Direct Link Ad integration service.
  *
  * Flow:
  *  1. User clicks "Watch Ad"
  *  2. showRewardAd() is called
- *  3. Monetag shows the ad
- *  4. On success → resolve(true)  → caller grants points
- *  5. On failure → reject(Error)  → caller shows error message
+ *  3. Opens the Monetag Direct Link in a new tab
+ *  4. Waits 5 seconds to simulate ad completion
+ *  5. On success → resolve(true) → caller grants points
  */
 
-const ZONE_ID = import.meta.env.VITE_MONETAG_ZONE_ID || ''
+const DIRECT_LINK_URL = 'https://omg10.com/4/11410343';
 
-/**
- * Dynamically inject the Monetag SDK script if it hasn't been loaded yet.
- * @returns {Promise<void>}
- */
-const loadMonetagSDK = () => {
-  return new Promise((resolve, reject) => {
-    // Already loaded
-    if (window.__monetag_loaded) {
-      resolve()
-      return
+export const showRewardAd = () => {
+  return new Promise((resolve) => {
+    // Open the ad in a new window/tab
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openLink) {
+      window.Telegram.WebApp.openLink(DIRECT_LINK_URL);
+    } else {
+      window.open(DIRECT_LINK_URL, '_blank');
     }
 
-    const script = document.createElement('script')
-    script.src = `https://ophoacam.com/v1.0/sdk.js?key=${ZONE_ID}`
-    script.async = true
+    // Wait 5 seconds to simulate ad duration before rewarding points
+    setTimeout(() => {
+      resolve(true);
+    }, 5000);
+  });
+};
 
-    script.onload = () => {
-      window.__monetag_loaded = true
-      resolve()
-    }
-
-    script.onerror = () => {
-      if (import.meta.env.DEV) {
-        console.warn('[Monetag] Failed to load SDK, resolving to allow dev simulation.')
-        resolve()
-      } else {
-        reject(new Error('Failed to load Monetag SDK. Check your Zone ID.'))
-      }
-    }
-
-    document.head.appendChild(script)
-  })
-}
-
-/**
- * Show a Monetag rewarded interstitial ad.
- *
- * @returns {Promise<boolean>} Resolves true on successful ad completion,
- *                             rejects with Error on failure or dismissal.
- */
-export const showRewardAd = async () => {
-  // Ensure SDK is loaded
-  try {
-    await loadMonetagSDK()
-  } catch (err) {
-    throw err
-  }
-
-  return new Promise((resolve, reject) => {
-    // Monetag exposes show_<zoneId> or a generic window.show_monetag
-    // Check both patterns for compatibility
-    const showFn =
-      window[`show_${ZONE_ID}`] ||
-      window.show_monetag ||
-      window.Monetag?.showAd
-
-    if (typeof showFn !== 'function') {
-      // Development / no SDK fallback – simulate a successful ad
-      if (import.meta.env.DEV) {
-        console.warn('[Monetag] SDK function not found. Simulating ad in DEV mode.')
-        setTimeout(() => resolve(true), 1500)
-        return
-      }
-      reject(new Error('Monetag SDK not initialised. Please check your Zone ID.'))
-      return
-    }
-
-    try {
-      showFn()
-        .then(() => {
-          // Ad was watched to completion
-          resolve(true)
-        })
-        .catch((err) => {
-          // Ad was skipped, failed, or not filled
-          reject(new Error(err?.message || 'Ad was not completed.'))
-        })
-    } catch (err) {
-      reject(new Error('Failed to show ad: ' + err.message))
-    }
-  })
-}
-
-/**
- * Check whether the Monetag SDK is ready.
- * @returns {boolean}
- */
 export const isMonetagReady = () => {
-  return !!(
-    window.__monetag_loaded &&
-    (window[`show_${ZONE_ID}`] || window.show_monetag || window.Monetag?.showAd)
-  )
-}
+  return true; // Direct links are always ready!
+};
