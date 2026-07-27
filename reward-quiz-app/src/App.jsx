@@ -22,6 +22,28 @@ function App() {
   // Prevent double-login on React StrictMode double-invoke
   const loginAttempted = useRef(false)
 
+  // Initialize Monetag In-App Interstitial Ad globally when the app mounts
+  useEffect(() => {
+    // Check periodically if the script is loaded to initialize the inApp ads
+    const initInterval = setInterval(() => {
+      if (typeof window.show_11434314 === 'function') {
+        window.show_11434314({
+          type: 'inApp',
+          inAppSettings: {
+            frequency: 2,
+            capping: 0.1,
+            interval: 30,
+            timeout: 5,
+            everyPage: false,
+          }
+        });
+        clearInterval(initInterval);
+      }
+    }, 1000);
+
+    return () => clearInterval(initInterval);
+  }, []);
+
   useEffect(() => {
     if (!isReady || loginAttempted.current) return
     loginAttempted.current = true
