@@ -26,37 +26,36 @@ const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:5173,ht
   .split(',')
   .map((o) => o.trim().replace(/\/$/, ''))
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Normalize incoming origin (may be undefined for non-browser clients)
-      const normalizedOrigin = origin ? origin.replace(/\/$/, '') : origin
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Normalize incoming origin (may be undefined for non-browser clients)
+    const normalizedOrigin = origin ? origin.replace(/\/$/, '') : origin
 
-      const isAllowed =
-        // Allow requests with no origin (mobile apps, Postman, Telegram WebView)
-        !origin ||
-        // Exact matches from ALLOWED_ORIGINS
-        allowedOrigins.includes(normalizedOrigin) ||
-        // Any vercel.app subdomain
-        (typeof normalizedOrigin === 'string' && normalizedOrigin.endsWith('.vercel.app')) ||
-        // Localhost (http/https)
-        (typeof normalizedOrigin === 'string' && (normalizedOrigin.startsWith('http://localhost') || normalizedOrigin.startsWith('https://localhost')))
+    const isAllowed =
+      // Allow requests with no origin (mobile apps, Postman, Telegram WebView)
+      !origin ||
+      // Exact matches from ALLOWED_ORIGINS
+      allowedOrigins.includes(normalizedOrigin) ||
+      // Any vercel.app subdomain
+      (typeof normalizedOrigin === 'string' && normalizedOrigin.endsWith('.vercel.app')) ||
+      // Localhost (http/https)
+      (typeof normalizedOrigin === 'string' && (normalizedOrigin.startsWith('http://localhost') || normalizedOrigin.startsWith('https://localhost')))
 
-      if (isAllowed) {
-        callback(null, true)
-      } else {
-        // Helpful log for diagnosing which origin was blocked in production
-        // (Vercel / Railway logs will show this if the backend is deployed there)
-        // eslint-disable-next-line no-console
-        console.warn(`CORS blocked origin: ${origin} — allowed: ${allowedOrigins.join(',')}`)
-        callback(new Error(`CORS: origin ${origin} not allowed`))
-      }
-    },
-    credentials: true,
-  })
-)
+    if (isAllowed) {
+      callback(null, true)
+    } else {
+      // Helpful log for diagnosing which origin was blocked in production
+      // (Vercel / Railway logs will show this if the backend is deployed there)
+      // eslint-disable-next-line no-console
+      console.warn(`CORS blocked origin: ${origin} — allowed: ${allowedOrigins.join(',')}`)
+      callback(new Error(`CORS: origin ${origin} not allowed`))
+    }
+  },
+  credentials: true,
+}
 
-app.options('*', cors())
+app.use(cors(corsOptions))
+app.options('*', cors(corsOptions))
 
 
 // ── Body parsing ──────────────────────────────────────────────────────────────
