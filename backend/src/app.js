@@ -44,6 +44,9 @@ app.use(
   })
 )
 
+app.options('*', cors())
+
+
 // ── Body parsing ──────────────────────────────────────────────────────────────
 app.use(express.json({ limit: '10kb' }))
 app.use(express.urlencoded({ extended: true, limit: '10kb' }))
@@ -77,5 +80,6 @@ app.use('/api/leaderboard', leaderboardRoutes)
 // ── 404 & global error handler ────────────────────────────────────────────────
 app.use(notFound)
 app.use(errorHandler)
+
 
 module.exports = app
