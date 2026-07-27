@@ -65,6 +65,11 @@ export function UserProvider({ children }) {
    */
   const addQuizResult = useCallback((result) => {
     setQuizHistory((prev) => [result, ...prev])
+    setUser((prev) => prev ? { ...prev, quizzesTaken: (prev.quizzesTaken || 0) + 1 } : prev)
+  }, [])
+
+  const incrementAdsWatched = useCallback(() => {
+    setUser((prev) => prev ? { ...prev, adsWatched: (prev.adsWatched || 0) + 1 } : prev)
   }, [])
 
   /**
@@ -88,6 +93,7 @@ export function UserProvider({ children }) {
         quizHistory,
         setQuizHistory,
         addQuizResult,
+        incrementAdsWatched,
         loading,
         setLoading,
         clearUser,

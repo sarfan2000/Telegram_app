@@ -23,7 +23,7 @@ const MAX_DAILY_ADS = 10
  * in production — the DEV simulation is the only exception.
  */
 function Reward() {
-  const { user, points, addPoints, setPoints } = useUser()
+  const { user, points, addPoints, setPoints, incrementAdsWatched } = useUser()
 
   // Session ad count (resets on page reload — backend is the source of truth)
   const [adsWatched, setAdsWatched] = useState(0)
@@ -89,6 +89,7 @@ function Reward() {
 
       // ── Step 3: Update session UI ────────────────────────────────────────
       setAdsWatched((n) => n + 1)
+      incrementAdsWatched()
       setHistory((h) => [
         {
           points: pointsAdded,
@@ -111,11 +112,10 @@ function Reward() {
       {/* ── Toast ── */}
       {toast && (
         <div
-          className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-2xl text-sm font-medium shadow-xl transition-all ${
-            toast.type === 'success'
-              ? 'bg-green-500/90 text-white'
-              : 'bg-red-500/90 text-white'
-          }`}
+          className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-2xl text-sm font-medium shadow-xl transition-all ${toast.type === 'success'
+            ? 'bg-green-500/90 text-white'
+            : 'bg-red-500/90 text-white'
+            }`}
         >
           {toast.message}
         </div>
