@@ -65,7 +65,16 @@ function Quiz() {
       if (err?.status === 429) {
         alert('You have already played your quiz today! Come back tomorrow.')
       } else {
-        alert('Could not start quiz. Please try again later.')
+        // Backend unavailable or error â€” use local fallback questions
+        console.warn('[Quiz] Backend start failed, using fallback questions:', err.message)
+        setQuestions(FALLBACK_QUESTIONS)
+        setStage('playing')
+        setCurrentIndex(0)
+        setScore(0)
+        setAnswersArray([])
+        setSelectedAnswer(null)
+        setIsRevealed(false)
+        setTimeLeft(TIME_PER_QUESTION)
       }
     } finally {
       setLoadingQuiz(false)
