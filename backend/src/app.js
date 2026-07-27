@@ -20,23 +20,35 @@ const app = express()
 app.use(helmet())
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
+// Normalize allowed origins (strip trailing slashes) and support
+// matching vercel subdomains. Add logging to help debug blocked origins.
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:5173,https://telegram-app-seven-lake.vercel.app')
   .split(',')
-  .map((o) => o.trim())
+  .map((o) => o.trim().replace(/\/$/, ''))
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (mobile apps, Postman, Telegram WebView)
-      // Also allow any vercel.app deployment and localhost explicitly.
-      if (
+      // Normalize incoming origin (may be undefined for non-browser clients)
+      const normalizedOrigin = origin ? origin.replace(/\/$/, '') : origin
+
+      const isAllowed =
+        // Allow requests with no origin (mobile apps, Postman, Telegram WebView)
         !origin ||
-        allowedOrigins.includes(origin) ||
-        origin.endsWith('.vercel.app') ||
-        origin.startsWith('http://localhost')
-      ) {
+        // Exact matches from ALLOWED_ORIGINS
+        allowedOrigins.includes(normalizedOrigin) ||
+        // Any vercel.app subdomain
+        (typeof normalizedOrigin === 'string' && normalizedOrigin.endsWith('.vercel.app')) ||
+        // Localhost (http/https)
+        (typeof normalizedOrigin === 'string' && (normalizedOrigin.startsWith('http://localhost') || normalizedOrigin.startsWith('https://localhost')))
+
+      if (isAllowed) {
         callback(null, true)
       } else {
+        // Helpful log for diagnosing which origin was blocked in production
+        // (Vercel / Railway logs will show this if the backend is deployed there)
+        // eslint-disable-next-line no-console
+        console.warn(`CORS blocked origin: ${origin} — allowed: ${allowedOrigins.join(',')}`)
         callback(new Error(`CORS: origin ${origin} not allowed`))
       }
     },
