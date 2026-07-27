@@ -16,70 +16,188 @@ const { notFound, errorHandler } = require('./middleware/errorMiddleware')
 
 const app = express()
 
-// ── Security headers ──────────────────────────────────────────────────────────
-app.use(helmet())
 
-// ── CORS ──────────────────────────────────────────────────────────────────────
-const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:5173')
-  .split(',')
-  .map((o) => o.trim())
+// ─────────────────────────────────────────
+// Security Headers
+// ─────────────────────────────────────────
 
 app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (mobile apps, Postman, Telegram WebView)
-      // Also allow any vercel.app deployment and localhost explicitly.
-      if (
-        !origin ||
-        allowedOrigins.includes(origin) ||
-        origin.endsWith('.vercel.app') ||
-        origin.startsWith('http://localhost')
-      ) {
-        callback(null, true)
-      } else {
-        callback(new Error(`CORS: origin ${origin} not allowed`))
-      }
-    },
-    credentials: true,
+  helmet({
+    crossOriginResourcePolicy: false,
   })
 )
 
-app.options('*', cors())
+
+// ─────────────────────────────────────────
+// CORS Configuration
+// ─────────────────────────────────────────
+
+const allowedOrigins = (
+  process.env.ALLOWED_ORIGINS ||
+  'http://localhost:5173,https://telegram-app-seven-lake.vercel.app'
+)
+.split(',')
+.map(origin => origin.trim())
+.filter(Boolean)
 
 
-// ── Body parsing ──────────────────────────────────────────────────────────────
-app.use(express.json({ limit: '10kb' }))
-app.use(express.urlencoded({ extended: true, limit: '10kb' }))
+const corsOptions = {
 
-// ── Request logging (dev only) ────────────────────────────────────────────────
+  origin: (origin, callback) => {
+
+    // Allow Postman, mobile apps, Telegram WebView
+    if (!origin) {
+      return callback(null, true)
+    }
+
+
+    // Allowed frontend domains
+    if (
+      allowedOrigins.includes(origin) ||
+      origin.endsWith('.vercel.app') ||
+      origin.startsWith('http://localhost')
+    ) {
+      return callback(null, true)
+    }
+
+
+    console.log("Blocked CORS Origin:", origin)
+
+    return callback(
+      new Error(`CORS blocked: ${origin}`)
+    )
+
+  },
+
+
+  credentials: true,
+
+
+  methods: [
+    'GET',
+    'POST',
+    'PUT',
+    'PATCH',
+    'DELETE',
+    'OPTIONS'
+  ],
+
+
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization'
+  ],
+
+
+  optionsSuccessStatus: 200
+
+}
+
+
+// Apply CORS
+app.use(cors(corsOptions))
+
+
+// Handle preflight requests
+app.options('*', cors(corsOptions))
+
+
+
+// ─────────────────────────────────────────
+// Body Parser
+// ─────────────────────────────────────────
+
+app.use(
+  express.json({
+    limit: '10kb'
+  })
+)
+
+
+app.use(
+  express.urlencoded({
+    extended: true,
+    limit: '10kb'
+  })
+)
+
+
+
+// ─────────────────────────────────────────
+// Logger
+// ─────────────────────────────────────────
+
 if (process.env.NODE_ENV !== 'production') {
   app.use(morgan('dev'))
 }
 
-// ── Global rate limiter (100 req / 15 min per IP) ─────────────────────────────
+
+
+// ─────────────────────────────────────────
+// Rate Limiter
+// ─────────────────────────────────────────
+
 const globalLimiter = rateLimit({
+
   windowMs: 15 * 60 * 1000,
+
   max: 100,
+
   standardHeaders: true,
+
   legacyHeaders: false,
-  message: { success: false, message: 'Too many requests, please try again later.' },
+
+  message: {
+    success: false,
+    message: 'Too many requests. Please try again later.'
+  }
+
 })
+
+
 app.use('/api', globalLimiter)
 
-// ── Health check ──────────────────────────────────────────────────────────────
-app.get('/health', (_req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() })
+
+
+// ─────────────────────────────────────────
+// Health Check
+// ─────────────────────────────────────────
+
+app.get('/health', (req, res) => {
+
+  res.status(200).json({
+    success: true,
+    status: 'OK',
+    message: 'Telegram API running',
+    time: new Date()
+  })
+
 })
 
-// ── API routes ────────────────────────────────────────────────────────────────
+
+
+// ─────────────────────────────────────────
+// API Routes
+// ─────────────────────────────────────────
+
 app.use('/api/users', userRoutes)
+
 app.use('/api/rewards', rewardRoutes)
+
 app.use('/api/quiz', quizRoutes)
+
 app.use('/api/leaderboard', leaderboardRoutes)
 
-// ── 404 & global error handler ────────────────────────────────────────────────
+
+
+// ─────────────────────────────────────────
+// Error Handling
+// ─────────────────────────────────────────
+
 app.use(notFound)
+
 app.use(errorHandler)
+
 
 
 module.exports = app
