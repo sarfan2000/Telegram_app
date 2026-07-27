@@ -48,14 +48,12 @@ function Quiz() {
 
   // ── Load questions ───────────────────────────────────────────────────────
   const startQuiz = async () => {
+    if (loadingQuiz) return
     setLoadingQuiz(true)
     try {
       const data = await getQuizQuestions()
       setQuestions(data?.questions ?? data ?? FALLBACK_QUESTIONS)
-    } catch {
-      setQuestions(FALLBACK_QUESTIONS)
-    } finally {
-      setLoadingQuiz(false)
+
       setStage('playing')
       setCurrentIndex(0)
       setScore(0)
@@ -63,6 +61,14 @@ function Quiz() {
       setSelectedAnswer(null)
       setIsRevealed(false)
       setTimeLeft(TIME_PER_QUESTION)
+    } catch (err) {
+      if (err?.status === 429) {
+        alert('You have already played your quiz today! Come back tomorrow.')
+      } else {
+        alert('Could not start quiz. Please try again later.')
+      }
+    } finally {
+      setLoadingQuiz(false)
     }
   }
 

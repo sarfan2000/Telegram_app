@@ -65,7 +65,7 @@ export function UserProvider({ children }) {
    */
   const addQuizResult = useCallback((result) => {
     setQuizHistory((prev) => [result, ...prev])
-    setUser((prev) => prev ? { ...prev, quizzesTaken: (prev.quizzesTaken || 0) + 1 } : prev)
+    setUser((prev) => prev ? { ...prev, quizzesTaken: (prev.quizzesTaken || 0) + 1, quizzesToday: (prev.quizzesToday || 0) + 1 } : prev)
   }, [])
 
   const incrementAdsWatched = useCallback(() => {

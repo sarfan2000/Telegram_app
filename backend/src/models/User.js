@@ -100,6 +100,7 @@ userSchema.methods.toPublic = function () {
     points: this.points,
     quizzesTaken: this.quizzesTaken,
     adsWatched: this.adsWatched,
+    quizzesToday: (this.daily && this.daily.quizzesToday) || 0,
     createdAt: this.createdAt,
   }
 }

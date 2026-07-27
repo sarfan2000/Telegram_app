@@ -63,13 +63,12 @@ function Home() {
       {/* ── Toast ── */}
       {toast && (
         <div
-          className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-2xl text-sm font-medium shadow-xl transition-all duration-300 ${
-            toast.type === 'success'
+          className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-2xl text-sm font-medium shadow-xl transition-all duration-300 ${toast.type === 'success'
               ? 'bg-green-500/90 text-white'
               : toast.type === 'info'
-              ? 'bg-tg-button/90 text-white'
-              : 'bg-red-500/90 text-white'
-          }`}
+                ? 'bg-tg-button/90 text-white'
+                : 'bg-red-500/90 text-white'
+            }`}
         >
           {toast.message}
         </div>
@@ -111,13 +110,12 @@ function Home() {
         <button
           onClick={handleDailyReward}
           disabled={dailyClaimed || dailyLoading}
-          className={`w-full flex items-center gap-3 px-5 py-4 rounded-2xl font-semibold transition-all active:scale-95 ${
-            dailyClaimed
+          className={`w-full flex items-center gap-3 px-5 py-4 rounded-2xl font-semibold transition-all active:scale-95 ${dailyClaimed
               ? 'bg-green-500/20 border border-green-500/40 text-green-400 cursor-default'
               : dailyLoading
-              ? 'bg-tg-card border border-white/10 text-tg-hint cursor-wait'
-              : 'bg-tg-card border border-tg-blue/30 text-tg-blue hover:bg-tg-blue/10'
-          }`}
+                ? 'bg-tg-card border border-white/10 text-tg-hint cursor-wait'
+                : 'bg-tg-card border border-tg-blue/30 text-tg-blue hover:bg-tg-blue/10'
+            }`}
         >
           <span className="text-2xl">
             {dailyLoading ? '⏳' : dailyClaimed ? '✅' : '🗓️'}
@@ -127,8 +125,8 @@ function Home() {
               {dailyLoading
                 ? 'Claiming…'
                 : dailyClaimed
-                ? 'Bonus Claimed!'
-                : 'Claim Daily Reward'}
+                  ? 'Bonus Claimed!'
+                  : 'Claim Daily Reward'}
             </div>
             <div className="text-xs opacity-70 font-normal">
               {dailyClaimed ? 'Come back tomorrow' : 'Get +50 free points'}
@@ -142,14 +140,23 @@ function Home() {
         <p className="text-tg-hint text-xs uppercase tracking-widest">Play Now</p>
 
         <button
-          onClick={() => navigate('/quiz')}
-          className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl bg-gradient-to-r from-tg-blue to-blue-600 text-white font-semibold active:scale-95 transition-all hover:shadow-lg hover:shadow-tg-blue/30"
+          onClick={() => {
+            if (user?.quizzesToday >= 1) {
+              showToast('You already played the quiz today! Come back tomorrow.', 'info')
+              return
+            }
+            navigate('/quiz')
+          }}
+          className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl font-semibold active:scale-95 transition-all ${user?.quizzesToday >= 1
+              ? 'bg-tg-card border border-white/5 text-tg-hint cursor-default'
+              : 'bg-gradient-to-r from-tg-blue to-blue-600 text-white hover:shadow-lg hover:shadow-tg-blue/30'
+            }`}
         >
           <span className="text-2xl">🧠</span>
           <div className="text-left">
-            <div>Start Quiz</div>
+            <div>{user?.quizzesToday >= 1 ? 'Quiz Completed Today' : 'Start Quiz'}</div>
             <div className="text-xs opacity-80 font-normal">
-              Answer questions, earn points
+              {user?.quizzesToday >= 1 ? 'Come back tomorrow!' : 'Answer questions, earn points'}
             </div>
           </div>
           <span className="ml-auto opacity-60">›</span>
