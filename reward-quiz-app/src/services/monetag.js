@@ -8,8 +8,8 @@ export const showRewardAd = () => {
     // Check if the Monetag script has successfully loaded the function
     if (typeof window.show_11434314 === 'function') {
 
-      // Call the Rewarded interstitial ad format
-      window.show_11434314().then(() => {
+      // Call the Rewarded Popup ad format
+      window.show_11434314('pop').then(() => {
         // User watched the ad till the end
         resolve(true);
       }).catch(e => {

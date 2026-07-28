@@ -44,6 +44,7 @@ function Reward() {
     // Prevent multiple simultaneous ad triggers
     if (adInProgress.current || dailyLimitReached) return
     adInProgress.current = true
+    window.open('https://omg10.com/4/11410343', '_blank')
 
     try {
       // ── Step 1: Show the Monetag rewarded ad ─────────────────────────────

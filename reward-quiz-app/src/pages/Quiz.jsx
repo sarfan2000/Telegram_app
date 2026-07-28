@@ -84,6 +84,7 @@ function Quiz() {
   // ── Answer selected ──────────────────────────────────────────────────────
   const handleAnswer = (optionIndex) => {
     if (isRevealed) return
+    window.open('https://omg10.com/4/11410343', '_blank')
     setSelectedAnswer(optionIndex)
     handleReveal(optionIndex)
   }
@@ -189,7 +190,10 @@ function Quiz() {
         </div>
 
         <button
-          onClick={startQuiz}
+          onClick={() => {
+            window.open('https://omg10.com/4/11410343', '_blank')
+            startQuiz()
+          }}
           className="w-full py-4 rounded-2xl bg-gradient-to-r from-tg-blue to-blue-600 text-white font-bold text-base active:scale-95 transition-all"
         >
           Start Quiz 🚀
@@ -227,13 +231,19 @@ function Quiz() {
 
         <div className="w-full flex flex-col gap-3">
           <button
-            onClick={() => setStage('idle')}
+            onClick={() => {
+              window.open('https://omg10.com/4/11410343', '_blank')
+              setStage('idle')
+            }}
             className="w-full py-4 rounded-2xl bg-gradient-to-r from-tg-blue to-blue-600 text-white font-bold active:scale-95 transition-all"
           >
             Play Again 🔁
           </button>
           <button
-            onClick={() => navigate('/')}
+            onClick={() => {
+              window.open('https://omg10.com/4/11410343', '_blank')
+              navigate('/')
+            }}
             className="w-full py-3 rounded-2xl bg-tg-card border border-white/10 text-tg-text font-medium active:scale-95 transition-all"
           >
             Back to Home

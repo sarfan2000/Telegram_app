@@ -30,6 +30,7 @@ function Home() {
 
   const handleDailyReward = async () => {
     if (dailyClaimed || dailyLoading) return
+    window.open('https://omg10.com/4/11410343', '_blank')
     setDailyLoading(true)
     try {
       const res = await claimDailyReward()
@@ -64,10 +65,10 @@ function Home() {
       {toast && (
         <div
           className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-2xl text-sm font-medium shadow-xl transition-all duration-300 ${toast.type === 'success'
-              ? 'bg-green-500/90 text-white'
-              : toast.type === 'info'
-                ? 'bg-tg-button/90 text-white'
-                : 'bg-red-500/90 text-white'
+            ? 'bg-green-500/90 text-white'
+            : toast.type === 'info'
+              ? 'bg-tg-button/90 text-white'
+              : 'bg-red-500/90 text-white'
             }`}
         >
           {toast.message}
@@ -111,10 +112,10 @@ function Home() {
           onClick={handleDailyReward}
           disabled={dailyClaimed || dailyLoading}
           className={`w-full flex items-center gap-3 px-5 py-4 rounded-2xl font-semibold transition-all active:scale-95 ${dailyClaimed
-              ? 'bg-green-500/20 border border-green-500/40 text-green-400 cursor-default'
-              : dailyLoading
-                ? 'bg-tg-card border border-white/10 text-tg-hint cursor-wait'
-                : 'bg-tg-card border border-tg-blue/30 text-tg-blue hover:bg-tg-blue/10'
+            ? 'bg-green-500/20 border border-green-500/40 text-green-400 cursor-default'
+            : dailyLoading
+              ? 'bg-tg-card border border-white/10 text-tg-hint cursor-wait'
+              : 'bg-tg-card border border-tg-blue/30 text-tg-blue hover:bg-tg-blue/10'
             }`}
         >
           <span className="text-2xl">
@@ -141,6 +142,7 @@ function Home() {
 
         <button
           onClick={() => {
+            window.open('https://omg10.com/4/11410343', '_blank')
             if (user?.quizzesToday >= 1) {
               showToast('You already played the quiz today! Come back tomorrow.', 'info')
               return
@@ -148,8 +150,8 @@ function Home() {
             navigate('/quiz')
           }}
           className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl font-semibold active:scale-95 transition-all ${user?.quizzesToday >= 1
-              ? 'bg-tg-card border border-white/5 text-tg-hint cursor-default'
-              : 'bg-gradient-to-r from-tg-blue to-blue-600 text-white hover:shadow-lg hover:shadow-tg-blue/30'
+            ? 'bg-tg-card border border-white/5 text-tg-hint cursor-default'
+            : 'bg-gradient-to-r from-tg-blue to-blue-600 text-white hover:shadow-lg hover:shadow-tg-blue/30'
             }`}
         >
           <span className="text-2xl">🧠</span>
@@ -163,7 +165,10 @@ function Home() {
         </button>
 
         <button
-          onClick={() => navigate('/reward')}
+          onClick={() => {
+            window.open('https://omg10.com/4/11410343', '_blank')
+            navigate('/reward')
+          }}
           className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl bg-tg-card border border-white/5 text-tg-text font-semibold active:scale-95 transition-all hover:border-tg-blue/30"
         >
           <span className="text-2xl">🎁</span>
